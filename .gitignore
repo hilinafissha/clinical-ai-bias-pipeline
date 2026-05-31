@@ -1,0 +1,48 @@
+# ================================
+# Data 
+# ================================
+*.csv
+*.csv.gz
+*.parquet
+data/raw/*
+!data/raw/.gitkeep
+!data/raw/README.md
+
+# ================================
+# Python
+# ================================
+__pycache__/
+*.py[cod]
+*.egg-info/
+.env
+venv/
+.venv/
+
+# ================================
+# Large model files
+# ================================
+*.pkl
+*.pt
+*.bin
+*.safetensors
+models/
+
+# ================================
+# Jupyter/Kaggle notebooks output
+# ================================
+.ipynb_checkpoints/
+*.ipynb
+
+# ================================
+# Results and figures
+# ================================
+results/
+*.png
+*.jpg
+*.pdf
+
+# ================================
+# System files
+# ================================
+.DS_Store
+Thumbs.db
