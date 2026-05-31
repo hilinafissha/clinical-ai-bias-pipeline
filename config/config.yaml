@@ -1,0 +1,43 @@
+# =============================================================
+# Project Configuration
+# From Stage to System: Bias Propagation in Clinical AI Pipelines
+# =============================================================
+
+# Random seed for reproducibility
+random_seed: 42
+
+# Data paths
+data:
+  mimic_dir: "C:/Users/hilin/Documents/MIMIC-IV"
+  output_dir: "data/splits"
+  notes_index: "data/splits/mimic_notes_index.parquet"
+  features:   "data/splits/mimic_features.parquet"
+  train:      "data/splits/train.parquet"
+  val:        "data/splits/val.parquet"
+  test:       "data/splits/test.parquet"
+
+# Train/val/test split ratios
+split:
+  train: 0.70
+  val:   0.15
+  test:  0.15
+
+
+protected_attributes:
+  single:         ["race", "sex", "insurance"]
+  intersectional: ["race_x_sex", "race_x_insurance"]
+
+# XGBoost settings
+stage2:
+  target:   "readmitted_30d"
+  n_trials: 50
+  metric:   "roc_auc"
+
+# enrollment threshold
+stage3:
+  enrollment_rate: 0.10
+
+# Fairness settings
+fairness:
+  lambda_values: [0.1, 0.5, 1.0, 2.0, 5.0]
+  n_bootstrap:   1000
