@@ -1,43 +1,73 @@
-# =============================================================
 # Project Configuration
 # From Stage to System: Bias Propagation in Clinical AI Pipelines
-# =============================================================
 
-# Random seed for reproducibility
+active_environment: "kaggle" 
 random_seed: 42
 
-# Data paths
-data:
-  mimic_dir: "C:/Users/hilin/Documents/MIMIC-IV"
-  output_dir: "data/splits"
-  notes_index: "data/splits/mimic_notes_index.parquet"
-  features:   "data/splits/mimic_features.parquet"
-  train:      "data/splits/train.parquet"
-  val:        "data/splits/val.parquet"
-  test:       "data/splits/test.parquet"
+environments:
+  local:
+    mimic_dir: "C:/Users/hilin/Documents/MIMIC-IV"
+    notes_dir: "C:/Users/hilin/Documents/MIMIC-IV/note"
+    preprocessed_dir: "data/splits"
+    output_dir: "data/splits"
+  kaggle:
+    mimic_dir: "/kaggle/input/mimic-iv"
+    notes_dir: "/kaggle/input/datasets/luwammajor/mimic-iv-notes"
+    preprocessed_dir: "/kaggle/input/datasets/luwammajor/clinical-pipeline-preprocessed"
+    output_dir: "/kaggle/working"
 
-# Train/val/test split ratios
+# Input datasets (resolved from preprocessed_dir)
+data:
+  notes_index: "mimic_notes_index.parquet"
+  features:    "mimic_features.parquet"
+  train:       "train.parquet"
+  val:         "val.parquet"
+  test:        "test.parquet"
+
+# Output files (resolved from output_dir)
+outputs:
+  stage1_output: "stage1_extracted.parquet"
+  stage1_eval_sample: "stage1_eval_sample.csv"
+
 split:
   train: 0.70
   val:   0.15
   test:  0.15
 
-
 protected_attributes:
   single:         ["race", "sex", "insurance"]
   intersectional: ["race_x_sex", "race_x_insurance"]
 
-# XGBoost settings
+stage1:
+  model_name: "BioMistral/BioMistral-7B"
+  temperature: 0.0
+  max_tokens: 512
+  sample_size: 4000
+  eval_sample_size: 100
+  checkpoint_every: 500
+  load_in_4bit: true
+  do_sample: false
+  stratify_on: ["race_clean", "readmitted_30d"]
+  sections:
+    - "History of Present Illness"
+    - "Social History"
+    - "Brief Hospital Course"
+    - "Discharge Diagnosis"
+  max_section_chars: 3000
+  extraction_targets: 
+    - "comorbidity_flags"
+    - "social_determinants"
+    - "psychiatric_complexity"
+    - "discharge_risk"
+
 stage2:
   target:   "readmitted_30d"
   n_trials: 50
   metric:   "roc_auc"
 
-# enrollment threshold
 stage3:
   enrollment_rate: 0.10
 
-# Fairness settings
 fairness:
   lambda_values: [0.1, 0.5, 1.0, 2.0, 5.0]
   n_bootstrap:   1000
