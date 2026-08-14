@@ -29,7 +29,6 @@ models/
 # Jupyter/Kaggle notebooks output
 
 .ipynb_checkpoints/
-*.ipynb
 
  
 # Results and figures
