@@ -41,7 +41,7 @@ protected_attributes:
 stage1:
   model_name: "BioMistral/BioMistral-7B"
   temperature: 0.0
-  max_tokens: 512
+  max_new_tokens: 512
   sample_size: 4000
   eval_sample_size: 100
   checkpoint_every: 500
