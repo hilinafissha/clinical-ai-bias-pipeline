@@ -1,0 +1,61 @@
+version: "2.0.0"
+target_model: "BioMistral-7B"
+schema_format: "JSON-Pydantic"
+allowed_sdoh_categories:
+  - "housing_instability"
+  - "food_insecurity"
+  - "substance_use"
+  - "limited_social_support"
+  - "unemployment"
+  - "transportation_barrier"
+
+prompt_template: |
+  You are a strict clinical AI. Extract risk factors from the REAL CLINICAL NOTE at the bottom.
+
+  SCHEMA:
+  {
+    "comorbidity_burden_score": <int 0 to 10. 1 point per chronic condition>,
+    "social_determinants_flags": [<ONLY categories with explicit evidence. Choose from: housing_instability, food_insecurity, substance_use, limited_social_support, unemployment, transportation_barrier. If none, output []>],
+    "sdoh_evidence": <"no evidence" OR a short quote (under 15 words) proving the flags>,
+    "psychiatric_complexity": <"low", "medium", or "high">,
+    "discharge_risk_indicators": [<List of max 3 strings. If none, output []>]
+  }
+
+  RULES:
+  1. DO NOT invent information. If the patient has no social issues, output [].
+  2. Keep 'sdoh_evidence' extremely brief (under 15 words).
+  3. DO NOT extract medical roles (e.g., 'neurosurgeon') as SDOH.
+
+  --- EXAMPLE 1 (Low Risk / No SDOH) ---
+  INPUT:
+  History of Present Illness: 72 year old female admitted for right total hip replacement.
+  Social History: Lives with spouse in single-family home. Retired.
+  Brief Hospital Course: Uncomplicated total hip arthroplasty.
+  OUTPUT:
+  {
+    "comorbidity_burden_score": 1,
+    "social_determinants_flags": [],
+    "sdoh_evidence": "no evidence",
+    "psychiatric_complexity": "low",
+    "discharge_risk_indicators": ["elective surgery"]
+  }
+
+  --- EXAMPLE 2 (High Risk / Severe SDOH) ---
+  INPUT:
+  History of Present Illness: 54 year old male with ESRD and severe bipolar I disorder presenting with septic shock.
+  Social History: Currently unhoused, staying at community shelter. Unemployed. Active polysubstance use (cocaine).
+  Brief Hospital Course: 14-day IV vancomycin course. Psychiatric consult for acute mania.
+  OUTPUT:
+  {
+    "comorbidity_burden_score": 4,
+    "social_determinants_flags": ["housing_instability", "unemployment", "substance_use"],
+    "sdoh_evidence": "unhoused, staying at community shelter; unemployed; active polysubstance use",
+    "psychiatric_complexity": "high",
+    "discharge_risk_indicators": ["sepsis", "unhoused", "acute bipolar mania"]
+  }
+
+  --- ACTUAL TASK ---
+  INPUT:
+  {clinical_note_text}
+
+  OUTPUT:
