@@ -1,5 +1,5 @@
-version: "2.0.0"
-target_model: "BioMistral-7B"
+version: "3.0.0" 
+target_model: "Meta-Llama-3.1-8B-Instruct" 
 schema_format: "JSON-Pydantic"
 allowed_sdoh_categories:
   - "housing_instability"
@@ -10,52 +10,23 @@ allowed_sdoh_categories:
   - "transportation_barrier"
 
 prompt_template: |
-  You are a strict clinical AI. Extract risk factors from the REAL CLINICAL NOTE at the bottom.
+  <s>[INST] You are a strict clinical AI information extraction system. Read the clinical note and extract risk factors into a valid JSON object matching the schema.
 
-  SCHEMA:
-  {
-    "comorbidity_burden_score": <int 0 to 10. 1 point per chronic condition>,
-    "social_determinants_flags": [<ONLY categories with explicit evidence. Choose from: housing_instability, food_insecurity, substance_use, limited_social_support, unemployment, transportation_barrier. If none, output []>],
-    "sdoh_evidence": <"no evidence" OR a short quote (under 15 words) proving the flags>,
-    "psychiatric_complexity": <"low", "medium", or "high">,
-    "discharge_risk_indicators": [<List of max 3 strings. If none, output []>]
-  }
+  SCHEMA FIELDS:
+  - comorbidity_burden_score: Integer (0-10), 1 point per chronic condition explicitly mentioned.
+  - sdoh_evidence: Short quote (max 15 words) proving the flags, or "no evidence" if none exist.
+  - social_determinants_flags: Array of strings chosen ONLY from: housing_instability, food_insecurity, substance_use, limited_social_support, unemployment, transportation_barrier. If sdoh_evidence is "no evidence", this MUST be [].
+  - psychiatric_complexity: Classify strictly based on the text as "low" (none/baseline), "medium" (managed anxiety/depression), or "high" (severe/active psychosis, bipolar, schizophrenia).
+  - discharge_risk_indicators: Array of max 3 short phrases extracted directly from the text representing primary diagnoses or complications. If none, output [].
 
   RULES:
-  1. DO NOT invent information. If the patient has no social issues, output [].
-  2. Keep 'sdoh_evidence' extremely brief (under 15 words).
-  3. DO NOT extract medical roles (e.g., 'neurosurgeon') as SDOH.
+  1. Base all extractions strictly on the clinical text provided. Do not assume or invent facts.
+  2. Medical conditions are NEVER social determinants.
+  3. If no social determinants are found, output "no evidence" and [].
+  4. Exact Mapping: The flags MUST match the evidence exactly. If evidence is "substance use", output ONLY ["substance_use"]. Do NOT infer housing instability, unemployment, or poor support from substance use.
+  5. Cognitive impairment (e.g., dementia, delirium, Alzheimer's, "poor historian") is a medical/neurological issue. Do NOT flag it as a social determinant or as psychiatric complexity.
 
-  --- EXAMPLE 1 (Low Risk / No SDOH) ---
-  INPUT:
-  History of Present Illness: 72 year old female admitted for right total hip replacement.
-  Social History: Lives with spouse in single-family home. Retired.
-  Brief Hospital Course: Uncomplicated total hip arthroplasty.
-  OUTPUT:
-  {
-    "comorbidity_burden_score": 1,
-    "social_determinants_flags": [],
-    "sdoh_evidence": "no evidence",
-    "psychiatric_complexity": "low",
-    "discharge_risk_indicators": ["elective surgery"]
-  }
-
-  --- EXAMPLE 2 (High Risk / Severe SDOH) ---
-  INPUT:
-  History of Present Illness: 54 year old male with ESRD and severe bipolar I disorder presenting with septic shock.
-  Social History: Currently unhoused, staying at community shelter. Unemployed. Active polysubstance use (cocaine).
-  Brief Hospital Course: 14-day IV vancomycin course. Psychiatric consult for acute mania.
-  OUTPUT:
-  {
-    "comorbidity_burden_score": 4,
-    "social_determinants_flags": ["housing_instability", "unemployment", "substance_use"],
-    "sdoh_evidence": "unhoused, staying at community shelter; unemployed; active polysubstance use",
-    "psychiatric_complexity": "high",
-    "discharge_risk_indicators": ["sepsis", "unhoused", "acute bipolar mania"]
-  }
-
-  --- ACTUAL TASK ---
-  INPUT:
+  CLINICAL NOTE:
   {clinical_note_text}
 
-  OUTPUT:
+  Extract the JSON object now: [/INST]

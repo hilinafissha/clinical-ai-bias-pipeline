@@ -39,7 +39,7 @@ protected_attributes:
   intersectional: ["race_x_sex", "race_x_insurance"]
 
 stage1:
-  model_name: "BioMistral/BioMistral-7B"
+  model_name: "meta-llama/Llama-3.1-8B-Instruct"
   temperature: 0.0
   max_new_tokens: 512
   sample_size: 4000
