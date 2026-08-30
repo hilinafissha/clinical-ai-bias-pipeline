@@ -4,7 +4,7 @@
 **Institution:** University of Bologna, Master in Artificial Intelligence  
 **Course:** Ethics in AI  
 
-![Dashboard Demo](assets/dashboard_demo.gif)
+![Bias Trace Visualizer Demo](assets/all_tabs_demo.gif)
 
 This repository contains the code and methodology for evaluating how bias propagates through multi-stage clinical AI systems. We audit an end-to-end pipeline (LLM risk extraction, XGBoost readmission classifier, and care management thresholding) to test whether localized fairness interventions genuinely reduce downstream discrimination or merely force it to migrate.
 
