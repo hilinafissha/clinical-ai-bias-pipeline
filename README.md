@@ -5,7 +5,6 @@
 **Course:** Ethics in AI  
 
 ![Dashboard Demo](assets/dashboard_demo.gif)
-*(Note: Place a GIF or screenshot of your Streamlit app in the `assets/` folder and link it above.)*
 
 This repository contains the code and methodology for evaluating how bias propagates through multi-stage clinical AI systems. We audit an end-to-end pipeline (LLM risk extraction, XGBoost readmission classifier, and care management thresholding) to test whether localized fairness interventions genuinely reduce downstream discrimination or merely force it to migrate.
 
