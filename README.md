@@ -1,9 +1,5 @@
 # From Stage to System: Bias Propagation in Clinical AI Pipelines 🛡️
 
-**Authors:** Luwam Major Kefali & Hilina Fissha Woreta  
-**Institution:** University of Bologna, Master in Artificial Intelligence  
-**Course:** Ethics in AI  
-
 ![Bias Trace Visualizer Demo](assets/all_tabs_demo.gif)
 
 This repository contains the code and methodology for evaluating how bias propagates through multi-stage clinical AI systems. We audit an end-to-end pipeline (LLM risk extraction, XGBoost readmission classifier, and care management thresholding) to test whether localized fairness interventions genuinely reduce downstream discrimination or merely force it to migrate.
@@ -57,3 +53,8 @@ streamlit run app.py
 Macro Audit: Evaluate semantic preservation KDE gates and overall risk divergence distributions.
 
 Micro Trace: Input a patient hadm_id to trace how a demographic token swap alters the LLM extraction, shifts the downstream XGBoost risk probability, and impacts the final care management decision.
+
+
+**Authors:** Luwam Major Kefali & Hilina Fissha Woreta  
+University of Bologna, Master in Artificial Intelligence  
+For completi
