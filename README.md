@@ -25,20 +25,16 @@ pip install -r requirements.txt
 ```
 
 ## Reproducing the Experiments
+
 The pipeline is divided into modular Jupyter Notebooks. Execute them in the following sequence to reproduce the study:
 
-preprocessing.ipynb: Cleans tabular features, maps ICD codes, and generates the patient-level train/val/test cohort splits.
-
-stage-1-risk-extraction.ipynb: Runs local LLM inference to parse the clinical discharge summaries.
-
-counterfactual-generation-and-semantic-audit.ipynb: Generates template-based demographic perturbations and validates semantic consistency via SBERT.
-
-readmission-risk-classifier.ipynb: Trains and calibrates the Stage 2 XGBoost tabular model.
-
-scratch-training.ipynb: Extends the Stage 1 sub-analysis by training XGBoost from scratch on the 3,986-patient cohort. 
-* Both models are trained on the same data and with the same algorithm; the only difference is that Model B includes the 9 discharge note features as additional inputs. 
-
-fairness-baseline.ipynb: Evaluates end-to-end pipeline bias and benchmarks the mitigation methods.
+1. `preprocessing.ipynb`: Cleans tabular features, maps ICD codes, and generates the patient-level train/val/test cohort splits.
+2. `stage-1-risk-extraction.ipynb`: Runs local LLM inference to parse the clinical discharge summaries.
+3. `counterfactual-generation-and-semantic-audit.ipynb`: Generates template-based demographic perturbations and validates semantic consistency via SBERT.
+4. `readmission-risk-classifier.ipynb`: Trains and calibrates the Stage 2 XGBoost tabular model.
+5. `scratch-training.ipynb`: Extends the Stage 1 sub-analysis by training XGBoost from scratch on the 3,986-patient cohort. 
+   * Both models are trained on the same data and with the same algorithm; the only difference is that Model B includes the 9 discharge note features as additional inputs.
+6. `fairness-baseline.ipynb`: Evaluates end-to-end pipeline bias and benchmarks the mitigation methods.
 
 
 ## Bias Trace Visualizer Dashboard
@@ -49,12 +45,13 @@ Ensure your generated .parquet output files are located in the output/ directory
 ```bash
 streamlit run app.py
 ```
-## Dashboard Features
-Macro Audit: Evaluate semantic preservation KDE gates and overall risk divergence distributions.
+### Dashboard Features
 
-Micro Trace: Input a patient hadm_id to trace how a demographic token swap alters the LLM extraction, shifts the downstream XGBoost risk probability, and impacts the final care management decision.
+* **Macro Audit:** Evaluate semantic preservation KDE gates and overall risk divergence distributions.
+* **Micro Trace:** Input a patient `hadm_id` to trace how a demographic token swap alters the LLM extraction, shifts the downstream XGBoost risk probability, and impacts the final care management decision.
 
+---
 
 **Authors:** Luwam Major Kefali & Hilina Fissha Woreta  
-University of Bologna, Master in Artificial Intelligence  
-For completi
+**Institution:** University of Bologna, Master of Science in Artificial Intelligence  
+**Course:** Ethics in AI
