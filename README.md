@@ -4,6 +4,11 @@
 
 This repository contains the code and methodology for evaluating how bias propagates through multi-stage clinical AI systems. We audit an end-to-end pipeline (LLM risk extraction, XGBoost readmission classifier, and care management thresholding) to test whether localized fairness interventions genuinely reduce downstream discrimination or merely force it to migrate.
 
+## At a Glance
+* ~400,000 MIMIC-IV admissions in the final cohort (279,569 train / 60,391 val / 59,409 test), 35 tabular features
+* 8 methods benchmarked (baseline plus 7 mitigation/bias-migration methods: reweighting, equalized odds, adversarial debiasing, CDA, path-aware CDA, DoWhy SCM, pipeline-aware hybrid)
+* 3 protected attribute axes (race, sex, insurance) plus 2 intersectional combinations (race×sex, race×insurance)
+* 
 ## Pipeline Architecture
 1. **Stage 1 (Clinical NLP Extraction):** Llama-3.1-8B-Instruct extracts comorbidity and social determinants from discharge notes.
 2. **Stage 2 (Tabular Classifier):** An XGBoost model predicts 30-day hospital readmission using structured features and Stage 1 outputs.
